@@ -1,0 +1,52 @@
+<html>
+<head>
+<style>
+  body{
+    text-align:center;
+  }
+  a{
+    text-decoration: none;
+  }
+</style>
+</head>
+
+<body>
+  <h1>Publishing Your Single Page...</h1>
+  <p>
+  <i>If the page does not redirect you in 10 seconds please click the link below</i>
+  </p>
+  <a id="url" href="">...</a>
+
+  <script>
+    window.addEventListener('load', (event) => {
+      const queryString = window.location.search;
+      const urlLink = document.getElementById("url");
+      const urlParams = new URLSearchParams(queryString);
+      const destUrl = urlParams.get("url")     
+
+      urlLink.innerHTML = destUrl;
+      urlLink.href = destUrl;
+
+      checkUrl(destUrl);
+
+      function checkUrl(url) {
+        fetch(url, {mode:"cors"})
+          .then((response) =>  {
+              if (!response.ok) {
+                return Promise.reject(response);
+              }else{
+                window.location.replace(url);
+              }
+          })
+          .catch(error => {
+            console.error('There was an error!', error);
+            setTimeout(() => {
+              checkUrl(url);
+            }, 3000)
+        });
+      }
+    });
+    
+  </script>
+</body>
+</html>

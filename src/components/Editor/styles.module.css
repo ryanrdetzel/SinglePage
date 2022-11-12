@@ -1,0 +1,35 @@
+.editor {
+  width: 100%;
+  background: white;
+  margin-bottom: 50px;
+  /* border: 0; */
+}
+
+:global(.ql-editor) {
+  min-height: 650px;
+}
+
+:global(.ql-container.ql-snow){
+  border:0;
+}
+:global(.ql-toolbar.ql-snow){
+  border:0;
+}
+
+.payment {
+  text-align: center;
+  background-color: white;
+  height:100%;
+  border-radius: 10px;
+  width:100%;
+  padding:25px;
+}
+
+.stripe{
+  height:100%;
+  border-radius: 10px;
+  background-color: white;
+  text-align: center;
+  width:100%;
+  padding:25px;
+}
