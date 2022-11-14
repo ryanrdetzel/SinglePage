@@ -1,0 +1,8 @@
+stripe*
+urllib3*
+requests*
+idna*
+charset*
+certifi*
+bin
+bcrypt*

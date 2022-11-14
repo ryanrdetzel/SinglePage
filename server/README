@@ -1,0 +1,7 @@
+pip3.exe install \
+    --platform manylinux2014_x86_64 \
+    --target=my-lambda-function \
+    --implementation cp \
+    --python 3.9 \
+    --only-binary=:all: --upgrade \
+    -r requirements.txt
