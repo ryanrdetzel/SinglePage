@@ -1,23 +1,22 @@
 import * as React from "react";
 
 import Box from "@mui/material/Box";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FilledInput from "@mui/material/FilledInput";
 import Input from "@mui/material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
 import styles from "./styles.module.css";
-
-// import Grid from "@mui/material/Grid";
+import { urlValidState } from "../../types/project";
 
 interface UrlInformation {
   pageUrl: string;
-  pageType: string | null;
+  urlIsValid: urlValidState;
   updatePageUrl: (newUrl: string) => void;
 }
 
 function UrlSelect(props: UrlInformation) {
-  const { pageUrl, pageType, updatePageUrl } = props;
-  // const [url, setUrl] = React.useState(pageUrl);
+  const { pageUrl, updatePageUrl, urlIsValid } = props;
 
   const updateUrl = (event: React.ChangeEvent<HTMLInputElement>) => {
     const wantUrl = event.target.value;
@@ -29,29 +28,45 @@ function UrlSelect(props: UrlInformation) {
     updatePageUrl(updatedUrl);
   };
 
-  const isAnonymous = pageType === "anon";
-  const sumdomain = isAnonymous ? "waffle" : "beta";
+  const subdomain = process.env.NODE_ENV === "development" ? "beta" : "www";
+
+  let validUrlClass = "text-secondary";
+  if (urlIsValid === urlValidState.Valid) {
+    validUrlClass = "text-success";
+  } else if (urlIsValid === urlValidState.Invalid) {
+    validUrlClass = "text-danger";
+  }
 
   return (
     <Box
       sx={{
-        // margin: "10px auto",
         padding: "4px",
         width: "100%",
-        // background: "#efefef",
         textAlign: "center",
       }}
     >
       <div style={{ display: "flex" }}>
-        {/* <div>Your single page URL:</div> */}
         <Box sx={{ flex: 1, marginLeft: "20px" }}>
           <Input
+            autoComplete="off"
             id="filled-adornment-weight"
             value={pageUrl}
             onChange={updateUrl}
+            style={{ alignItems: "center" }}
             startAdornment={
-              <InputAdornment position="start">
-                https://{sumdomain}.singlepage.cc/
+              <InputAdornment
+                position="start"
+                style={{ marginRight: "2px", marginBottom: "2px" }}
+              >
+                https://{subdomain}.singlepage.cc/
+              </InputAdornment>
+            }
+            endAdornment={
+              <InputAdornment position="end">
+                <CheckCircleIcon
+                  className={validUrlClass}
+                  aria-label="toggle password visibility"
+                ></CheckCircleIcon>
               </InputAdornment>
             }
             aria-describedby="filled-weight-helper-text"

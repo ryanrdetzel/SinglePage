@@ -1,35 +1,47 @@
 import "./App.css";
+import "./theme-default.css";
 
 import * as React from "react";
 
-import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Editor from "./components/Editor";
 import Grid from "@mui/material/Grid";
-import PageType from "./components/PageType";
-import Typography from "@mui/material/Typography";
 import UrlSelect from "./components/UrlSelect";
+import { urlValidState } from "./types/project";
 
-interface PublishFuncRef {
-  publishFunction: () => void;
-}
-
-type test = () => void;
+type editorPublishFuncType = () => void;
+type timerType = ReturnType<typeof setTimeout>;
 
 function App() {
-  const [pageType, setPageType] = React.useState<null | string>(null);
   const [url, setUrl] = React.useState<string>("");
+  const [theme, setTheme] = React.useState("default");
 
-  const makeTypeSelection = (selection: string) => {
-    setPageType(selection);
-  };
+  const [urlIsValid, setUrlIsValid] = React.useState<urlValidState>(
+    urlValidState.Unknown
+  );
+  const timerRef = React.useRef<timerType | null>(null);
 
   const updatePageUrl = (newPageUrl: string) => {
-    console.log(newPageUrl);
     setUrl(newPageUrl);
+    setUrlIsValid(urlValidState.Unknown);
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      fetch("https://api.singlepage.cc/checkUrl", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: newPageUrl }),
+      })
+        .then((res) => res.json())
+        .then((data) => setUrlIsValid(data.valid));
+
+      setUrlIsValid(urlValidState.Unknown);
+    }, 500);
   };
 
-  const editorPublishFunc = React.useRef<test>(null);
+  const editorPublishFunc = React.useRef<editorPublishFuncType>(null);
 
   const publishPage = () => {
     if (editorPublishFunc.current) {
@@ -39,7 +51,7 @@ function App() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg fixed-top navbar-custom sticky">
+      <nav className="navbar navbar-expand-lg fixed-top navbar sticky">
         <div className="container">
           <a className="navbar-brand logo">
             <i className="mdi mdi-chart-donut-variant"></i> Single Page
@@ -55,45 +67,49 @@ function App() {
           >
             <i className="mdi mdi-menu"></i>
           </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
+          <div className="navbar" id="navbarNav" style={{ width: "100%" }}>
             <UrlSelect
-              pageType={pageType}
               pageUrl={url}
+              urlIsValid={urlIsValid}
               updatePageUrl={updatePageUrl}
             />
           </div>
-          <button
-            type="submit"
-            id="submit"
-            name="send"
-            className="btn btn-link btn-sm"
+          <select
+            className="custom-select"
+            style={{ maxWidth: "150px", marginRight: "10px" }}
+            onChange={(e) => setTheme(e.currentTarget.value)}
+            value={theme}
           >
-            Help
-          </button>
-          <button
-            type="submit"
-            id="submit"
-            name="send"
+            <option value="default">Default Theme</option>
+            <option value="two">Duex</option>
+            <option value="mega">Mega Theme</option>
+            <option value="console">Console Theme</option>
+            <option value="french">French Theme</option>
+            <option value="gill">Gill Theme</option>
+          </select>
+          <a
             className="btn btn-light btn-sm"
             style={{ marginRight: "10px" }}
-            onClick={publishPage}
+            target="_blank"
+            rel="noreferrer"
+            href={`/preview.html?theme=${theme}`}
           >
-            Preview Page
-          </button>
+            Preview
+          </a>
           <a
-            href="#service"
+            href="#publish"
             type="submit"
             id="submit"
             className="btn btn-custom btn-sm"
             onClick={publishPage}
           >
-            Publish Page
+            Publish
           </a>
         </div>
       </nav>
 
       <section className="home-prestion" id="home">
-        <Container>
+        <Container className={theme}>
           <Grid
             item
             xs={12}
@@ -101,7 +117,7 @@ function App() {
             justifyContent="center"
             alignItems="center"
           >
-            <Editor url={url} />
+            <Editor url={url} urlIsValid={urlIsValid} theme={theme} />
           </Grid>
         </Container>
       </section>

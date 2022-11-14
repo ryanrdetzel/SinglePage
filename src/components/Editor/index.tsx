@@ -3,23 +3,43 @@ import "react-quill/dist/quill.snow.css";
 import * as React from "react";
 
 import EditorToolbar, { formats, modules } from "./EditorToolbar";
-import ReactQuill, { Quill } from "react-quill";
-import { stringify, v4 as uuidv4 } from "uuid";
 
 import CheckoutForm from "../CheckoutForm";
 import { Elements } from "@stripe/react-stripe-js";
 import Grid from "@mui/material/Grid";
+import ReactQuill from "react-quill";
 import { loadStripe } from "@stripe/stripe-js";
 import styles from "./styles.module.css";
-
-const stripePromise = loadStripe("pk_7N26jvoavbV1Cw74KBPPRZH3241eT");
+import { urlValidState } from "../../types/project";
+import { v4 as uuidv4 } from "uuid";
 
 interface EditorProps {
   url: string;
+  urlIsValid: urlValidState;
+  theme: string;
 }
 
-function Editor({ url }: EditorProps) {
+const stripeKey = process.env.REACT_APP_STRIPE || "";
+const stripePromise = loadStripe(stripeKey);
+
+function Editor({ url, urlIsValid, theme }: EditorProps) {
   const [clientSecret, setClientSecret] = React.useState<string>("");
+  const [secretPhrase, setSecretPhrase] = React.useState(() => {
+    let phrase = localStorage.getItem("phrase");
+    if (!phrase) {
+      fetch("https://api.singlepage.cc/phrase", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          localStorage.setItem("phrase", data.phrase);
+          setSecretPhrase(data.phrase);
+        });
+    }
+    return phrase;
+  });
+
   const [genId] = React.useState(() => {
     let uuid = localStorage.getItem("uuid");
     if (!uuid) {
@@ -30,20 +50,13 @@ function Editor({ url }: EditorProps) {
   });
 
   const [value, setValue] = React.useState(() => {
-    // getting stored value
     const saved = localStorage.getItem("value") || "{}";
     const initialValue = JSON.parse(saved);
     return initialValue || "";
   });
   const [content, setContent] = React.useState("");
 
-  // React.useEffect(() => {
-  //   editorPublishFunc.current = publishPage;
-  // }, []);
-
   React.useEffect(() => {
-    // Create PaymentIntent as soon as the page loads
-
     fetch("https://api.singlepage.cc/paysetup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -54,9 +67,12 @@ function Editor({ url }: EditorProps) {
   }, []);
 
   React.useEffect(() => {
-    // storing input name
     localStorage.setItem("value", JSON.stringify(value));
   }, [value]);
+
+  React.useEffect(() => {
+    localStorage.setItem("content", content);
+  }, [content]);
 
   const updateVal = (content: string, delta: any, source: any, editor: any) => {
     const d = editor.getContents();
@@ -72,9 +88,11 @@ function Editor({ url }: EditorProps) {
     url,
     content,
     genId,
+    secretPhrase,
+    theme,
   };
 
-  const publishPage = async () => {
+  const publishPage = async (): Promise<string> => {
     const response = await fetch("https://api.singlepage.cc/publish", {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
@@ -82,7 +100,6 @@ function Editor({ url }: EditorProps) {
       credentials: "same-origin", // include, *same-origin, omit
       headers: {
         "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       redirect: "follow", // manual, *follow, error
       referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
@@ -90,9 +107,7 @@ function Editor({ url }: EditorProps) {
     });
     const content = await response.json();
     const newId = content["genId"];
-    console.log(genId, newId);
     return newId;
-    // console.log(await response.json());
   };
 
   return (
@@ -110,34 +125,22 @@ function Editor({ url }: EditorProps) {
         />
       </div>
 
-      <section className="section" id="service">
+      <section className="section" id="publish">
         <Grid container spacing={2}>
-          <Grid
-            item
-            xs={6}
-            // display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
+          <Grid item xs={6} justifyContent="center" alignItems="center">
             <div className={styles.payment}>
               <h3>You will be charged</h3>
-              <h1 className="display-4">$1.00 USD</h1>
+              <h1 className="display-4">$1.00 US</h1>
               <p>
                 To publish this Single Page.
                 <br />
                 <a href="">Why do we charge to publish a page?</a>
               </p>
-              <p>
-                <label>
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="terms"
-                  />{" "}
-                  I agree to the <a href="#">terms and conditions.</a>
-                </label>
-              </p>
+              <hr />
+              <div>Your secret phrase is</div>
+              <h3>{secretPhrase}</h3>
+              <div>Store this in a safe place!</div>
+              <a href="">What is a secret phrase and why do I need it?</a>
             </div>
           </Grid>
           <Grid
@@ -150,7 +153,11 @@ function Editor({ url }: EditorProps) {
             <div className={styles.stripe}>
               {clientSecret && (
                 <Elements options={options} stripe={stripePromise}>
-                  <CheckoutForm publishPage={publishPage} url={url} />
+                  <CheckoutForm
+                    publishPage={publishPage}
+                    url={url}
+                    urlIsValid={urlIsValid}
+                  />
                 </Elements>
               )}
             </div>
