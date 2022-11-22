@@ -1,5 +1,7 @@
 div.default .ql-editor {
- font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+               "Helvetica Neue", sans-serif;
  font-size:1.0em;
  padding: 20px 40px !important;
 

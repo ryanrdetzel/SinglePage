@@ -81,11 +81,11 @@ function App() {
             value={theme}
           >
             <option value="default">Default Theme</option>
-            <option value="two">Duex</option>
+            {/* <option value="two">Duex</option>
             <option value="mega">Mega Theme</option>
             <option value="console">Console Theme</option>
             <option value="french">French Theme</option>
-            <option value="gill">Gill Theme</option>
+            <option value="gill">Gill Theme</option> */}
           </select>
           <a
             className="btn btn-light btn-sm"

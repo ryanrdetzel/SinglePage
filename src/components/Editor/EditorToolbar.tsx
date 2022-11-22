@@ -1,12 +1,6 @@
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
 import { Quill } from "react-quill";
 import React from "react";
 
-// Add sizes to whitelist and register them
 const Size = Quill.import("formats/size");
 Size.whitelist = ["extra-small", "small", "medium", "large"];
 Quill.register(Size, true);

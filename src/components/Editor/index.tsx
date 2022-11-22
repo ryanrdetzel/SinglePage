@@ -137,9 +137,11 @@ function Editor({ url, urlIsValid, theme }: EditorProps) {
                 <a href="">Why do we charge to publish a page?</a>
               </p>
               <hr />
-              <div>Your secret phrase is</div>
-              <h3>{secretPhrase}</h3>
-              <div>Store this in a safe place!</div>
+              <div>Store this secret phrase in a safe location</div>
+              <h3 className="display-4" style={{ fontSize: "2.3em" }}>
+                {secretPhrase}
+              </h3>
+
               <a href="">What is a secret phrase and why do I need it?</a>
             </div>
           </Grid>

@@ -9,7 +9,8 @@ div.default .ql-editor {
 	font-weight: inherit;
 	font-family: inherit;
 	font-style: inherit;
-	font-size: 100%;
+	
+  font-size:16px;
 	border: 0 none;
 	outline: 0;
 	padding: 0;
@@ -18,8 +19,12 @@ div.default .ql-editor {
 
 /*  Default  */
 div.default .ql-editor {
- font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
- font-size:1.0em;
+ /* font-family: Helvetica Neue, Helvetica, Arial, sans-serif; */
+ /* font-family: "Open Sans","Helvetica Neue",sans-serif; */
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+               "Helvetica Neue", sans-serif;
 }
 
 div.default .ql-editor h1 {
@@ -51,71 +56,6 @@ div.gill .ql-editor {
   font-family:Gill Sans, Gill Sans MT, Calibri, sans-serif;
   font-size:1.2em;
 }
-
-
-p{
-}
-p.ql-align-center{
-}
-p.ql-align-right{
-}
-p.ql-align-justify{
-}
-
-.ql-indent-1{}
-.ql-indent-2{}
-.ql-indent-3{}
-.ql-indent-4{}
-.ql-indent-5{}
-.ql-indent-6{}
-.ql-indent-7{}
-.ql-indent-8{}
-
-.ql-size-large{
-}
-.ql-size-medium{
-}
-.ql-size-small{
-}
-
-a{
-}
-
-h1{
-}
-h2{
-}
-
-strong{
-  font-weight: bolder;
-}
-
-em{
-}
-s{
-}
-u{
-}
-
-ul{
-}
-ul li{
-}
-
-ol{
-}
-ol li {
-}
-
-sup{
-}
-
-sub{
-}
-
-blockquote{
-}
-
 
 div.default .ql-editor pre.ql-syntax{
   background:#ccc;
